@@ -1,4 +1,4 @@
-#### Introduction
+#### Work Introduction
 ### ""LeNet_CNN_CIFAR10""
 ## Model: LeNet 
 ## Data: CIFAR10 SOURCE: https://www.cs.toronto.edu/~kriz/cifar.html
