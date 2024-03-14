@@ -1,6 +1,6 @@
 # Work Introduction
 
-## "Repro_Sampling Method"
+## "Repro_Sampling_Method"
 #### Model: Fully Connected with arbituary architecture parameters (parameters are subject to search in a context of GRID SEARCH.)
 #### Data: Float numbers that are standard normally generated with additional standard normal random noise.
 #### Puprpose: According to Repro_Sampling Method (under development) create a Performance Guaranteed Deep Neuron Network model. The model has functionalities 1) follows data simulation study, generate data under experiment context 2) grid search on architecture parameters 3) perform nuclear mapping calculation 4) perform Monte-Calo simulation on model performance and Borel Set calculation. After step 4, model will generate a performance guaranteed Borel Interval for architecture parameters.
