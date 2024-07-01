@@ -17,3 +17,5 @@
 #### Data Description: The MNIST database (Modified National Institute of Standards and Technology database) is a large collection of handwritten digits. It has a training set of 60,000 examples, and a test set of 10,000 examples. Each image is collected with 20 x 20 pixels.
 #### Purpose: Compare performance difference on the the same image classification task on (1) Model using PyTorch Framework vs (2) Model coded using only Numpy. Expect test accuracy difference less <= 3%.
 
+## "simplified_banking_system" 
+#### A Python implementation of a simplified banking system. It is an object-oriented program that simulates basic features of a banking application, including account creation, deposits, transfers, payments, and account merging.
