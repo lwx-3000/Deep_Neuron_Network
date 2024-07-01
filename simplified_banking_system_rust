@@ -1,0 +1,154 @@
+use std::collections::HashMap;
+
+#[derive(Debug)]
+struct Account {
+    account_id: String,
+    balance: f64,
+    scheduled_payments: Vec<ScheduledPayment>,
+}
+
+#[derive(Debug)]
+struct ScheduledPayment {
+    payment_id: String,
+    amount: f64,
+    cashback: f64,
+    status: PaymentStatus,
+}
+
+#[derive(Debug, PartialEq)]
+enum PaymentStatus {
+    Pending,
+    Completed,
+    InProgress,
+}
+
+impl Account {
+    fn new(account_id: String) -> Account {
+        Account {
+            account_id,
+            balance: 0.0,
+            scheduled_payments: vec![],
+        }
+    }
+
+    fn deposit(&mut self, amount: f64) {
+        self.balance += amount;
+    }
+
+    fn schedule_payment(
+        &mut self,
+        payment_id: String,
+        amount: f64,
+        cashback_percentage: f64,
+    ) -> Result<(), String> {
+        if self.balance < amount {
+            Err("Insufficient funds".to_string())
+        } else {
+            let cashback = amount * cashback_percentage / 100.0;
+            self.scheduled_payments.push(ScheduledPayment {
+                payment_id,
+                amount,
+                cashback,
+                status: PaymentStatus::Pending,
+            });
+            self.balance -= amount; // Reserve the funds for payment
+            Ok(())
+        }
+    }
+
+    fn execute_payment(&mut self, payment_id: &str) -> Result<(), String> {
+        if let Some(payment) = self
+            .scheduled_payments
+            .iter_mut()
+            .find(|p| p.payment_id == payment_id)
+        {
+            if payment.status == PaymentStatus::Pending {
+                self.balance += payment.cashback; // Apply cashback
+                payment.status = PaymentStatus::Completed;
+                Ok(())
+            } else {
+                Err("Payment already completed or in progress".to_string())
+            }
+        } else {
+            Err("Payment not found".to_string())
+        }
+    }
+}
+
+struct Bank {
+    accounts: HashMap<String, Account>,
+}
+
+impl Bank {
+    fn new() -> Bank {
+        Bank {
+            accounts: HashMap::new(),
+        }
+    }
+
+    fn create_account(&mut self, account_id: String) -> Result<(), String> {
+        if self.accounts.contains_key(&account_id) {
+            Err("Account already exists".to_string())
+        } else {
+            self.accounts
+                .insert(account_id.clone(), Account::new(account_id));
+            Ok(())
+        }
+    }
+
+    fn get_account_ranking(&self) -> Vec<(String, f64)> {
+        let mut total_outflows: Vec<(String, f64)> = self
+            .accounts
+            .iter()
+            .map(|(id, acc)| {
+                let total_outflow = acc
+                    .scheduled_payments
+                    .iter()
+                    .filter(|p| p.status == PaymentStatus::Completed)
+                    .map(|p| p.amount)
+                    .sum::<f64>();
+                (id.clone(), total_outflow)
+            })
+            .collect();
+        total_outflows.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        total_outflows
+    }
+
+    fn merge_accounts(
+        &mut self,
+        primary_account_id: &str,
+        secondary_account_id: &str,
+    ) -> Result<(), String> {
+        if primary_account_id == secondary_account_id {
+            return Err("Cannot merge the same account".to_string());
+        }
+
+        let secondary_account = match self.accounts.remove(secondary_account_id) {
+            Some(acc) => acc,
+            None => return Err("Secondary account not found".to_string()),
+        };
+
+        if let Some(primary_account) = self.accounts.get_mut(primary_account_id) {
+            primary_account.balance += secondary_account.balance;
+            primary_account
+                .scheduled_payments
+                .extend(secondary_account.scheduled_payments);
+            Ok(())
+        } else {
+            Err("Primary account not found".to_string())
+        }
+    }
+}
+
+fn main() {
+    let mut bank = Bank::new();
+    bank.create_account("account1".to_string()).unwrap();
+    let mut acc = bank.accounts.get_mut("account1").unwrap();
+    acc.deposit(2000.0);
+    acc.schedule_payment("payment1".to_string(), 500.0, 2.0)
+        .unwrap();
+    acc.execute_payment("payment1").unwrap();
+    println!("{:?}", acc);
+    let ranking = bank.get_account_ranking();
+    println!("Ranking: {:?}", ranking);
+}
