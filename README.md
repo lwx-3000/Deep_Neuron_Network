@@ -31,5 +31,5 @@ Level 3: Scheduling payments with cashback and checking the status of scheduled 
 Level 4: (Planned) Merging two accounts while retaining balance and transaction histories.
 
 ## "simplified_banking_system_rust"
-A re-implementation of "simplified_banking_system". It is naive implementation in Rust language. This implementation should cover all the specified functionalities \
+A re-implementation of "simplified_banking_system". It is a naive implementation in Rust. This implementation should cover all the specified functionalities. \
 Include Level 1 to level 4: account creation, deposits, money transfers between accounts, ranking accounts, scheduling payments, checking the status of scheduled payments, merging two accounts.
